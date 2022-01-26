@@ -3,13 +3,14 @@ from django.db import models
 
 
 class Enterprise(models.Model):
-    registration_number = models.BigIntegerField(null=False, blank=False)
+    registration_number = models.BigIntegerField(null=False, blank=False, db_index=True)
     name = models.CharField(max_length=50, null=False, blank=False)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, db_index=True)
     sector = models.ForeignKey(to='Sector', related_name='enterprise_sector', on_delete=models.CASCADE,default='Multiple')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     number_of_employees = models.IntegerField(default=1)
+    is_verified = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'enterprises'
@@ -24,10 +25,10 @@ class Sector(models.Model):
 
 class User(models.Model):
     name = models.CharField(max_length=50, blank=False, null=False)
-    email = models.EmailField(max_length=100, blank=False, null=False, default=None)
-    mobile = models.BigIntegerField(unique=True, blank=False, null=False)
+    email = models.EmailField(max_length=100, blank=False, null=False, default=None, db_index=True)
+    mobile = models.BigIntegerField(unique=True, blank=False, null=False, db_index=True)
     city = models.ForeignKey(to='City', related_name='user_city',
-                             blank=True, null=True, on_delete=models.CASCADE)
+                            blank=True, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField()
@@ -71,7 +72,7 @@ class MobileOtpLogs(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'mobile_otp_logs'
+        db_table = 'mobile_otps'
 
 
 class EmailOtpLogs(models.Model):
@@ -80,4 +81,4 @@ class EmailOtpLogs(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'email_otp_logs'
+        db_table = 'email_otps'

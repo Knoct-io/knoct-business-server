@@ -10,12 +10,12 @@ def generate_otp():
 def process_mobile_otp(mobile):
     otp = generate_otp()
     MobileOtpLogs.objects.create(mobile=mobile, otp=otp)
-    send_otp_sms.delay(mobile, otp)
+    send_otp_sms(mobile, otp)
     return otp
 
 
 def process_email_otp(email):
     otp = generate_otp()
     EmailOtpLogs.objects.create(email=email, otp=otp)
-    send_otp_mail.delay(email, otp)
+    send_otp_mail(email, otp)
     return otp

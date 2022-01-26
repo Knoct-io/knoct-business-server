@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from corsheaders.defaults import default_headers
 
@@ -81,17 +82,16 @@ WSGI_APPLICATION = 'knot_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES={
+DATABASES={  
    'default':{
       'ENGINE':'django.db.backends.postgresql_psycopg2',
-      'NAME':'postgres',
-      'USER':'postgres',
-      'PASSWORD':'1234',
-      'HOST':'localhost',
-      'PORT':'5432',
+      'NAME':os.getenv('KNOCT_DB_NAME'),
+      'USER':os.getenv('KNOCT_DB_USER'),
+      'PASSWORD':os.getenv('KNOCT_DB_PASSWORD'),
+      'HOST':os.getenv('KNOCT_DB_HOST'),
+      'PORT':os.getenv('KNOCT_DB_PORT'),
    }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

@@ -6,7 +6,7 @@ class Enterprise(models.Model):
     registration_number = models.BigIntegerField(null=False, blank=False, db_index=True)
     name = models.CharField(max_length=50, null=False, blank=False)
     email = models.EmailField(unique=True, db_index=True)
-    sector = models.ForeignKey(to='Sector', related_name='enterprise_sector', on_delete=models.CASCADE,default='Multiple')
+    sector = models.ForeignKey(to='Sector', related_name='enterprise_sector', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     number_of_employees = models.IntegerField(default=1)

@@ -1,6 +1,8 @@
 from random import randrange
+from django.utils import timezone
+
 from .constants import MIN_OTP_VALUE, MAX_OTP_VALUE
-from .models import MobileOtpLogs, EmailOtpLogs, Sector
+from .models import MobileOtpLogs, EmailOtpLogs
 from .tasks import send_otp_sms, send_otp_mail
 
 def generate_otp():
@@ -19,3 +21,8 @@ def process_email_otp(email):
     EmailOtpLogs.objects.create(email=email, otp=otp)
     send_otp_mail(email, otp)
     return otp
+
+def time_validated_in_seconds(created_at, valid_time):
+    print((timezone.now()-created_at).seconds)
+    print(valid_time)
+    return (timezone.now()-created_at).seconds<valid_time

@@ -1,6 +1,6 @@
 from random import randrange
 from .constants import MIN_OTP_VALUE, MAX_OTP_VALUE
-from .models import MobileOtpLogs, EmailOtpLogs
+from .models import MobileOtpLogs, EmailOtpLogs, Sector
 from .tasks import send_otp_sms, send_otp_mail
 
 def generate_otp():

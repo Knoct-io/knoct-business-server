@@ -2,14 +2,15 @@ from re import T
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST,
-                                   HTTP_401_UNAUTHORIZED)
+                                    HTTP_401_UNAUTHORIZED)
 from rest_framework.views import APIView
+from django.core.cache import cache
 
 from .constants import MAX_OTP_TIME
 from .models import EmailOtpLogs, Enterprise, MobileOtpLogs, User, City, Privilege, Sector
 from .serializers import CitySerializer, PrivilegeSerializer, SectorSerializer
 from .user_helpers import (process_email_otp, process_mobile_otp,
-                           time_validated_in_seconds)
+                            time_validated_in_seconds)
 
 
 class AddEnterpriseView(APIView):
@@ -76,16 +77,24 @@ class VerifyOtpView(APIView):
         otp = request.data.get('otp')
         email = request.data.get('email')
         mobile = request.data.get('mobile')
-        if not otp:
-            return Response({"Success":False, "Message":"Invalid otp or email"}, status=HTTP_400_BAD_REQUEST)
+        is_user = request.data.get('is_user')
+
+        if not otp or not email or is_user is None:
+            return Response({"Success":False, "Message":"Invalid otp or email or page"}, status=HTTP_400_BAD_REQUEST)
 
         if mobile:
             mobile_otp_obj = MobileOtpLogs.objects.filter(mobile=mobile).order_by('created_at').first()
             if not mobile_otp_obj:
                 return Response({"Success":False, "Message":"Otp does not exist"}, status=HTTP_401_UNAUTHORIZED)
             
-            if mobile_otp_obj.otp == otp:
-                return Response({"Success":True, "Message":"Mobile Authenticated"}, status=HTTP_200_OK)
+            if mobile_otp_obj.otp == otp and time_validated_in_seconds(mobile_otp_obj.created_at, MAX_OTP_TIME):
+                try:
+                    user = User.objects.get(mobile=mobile)
+                    user.mobile_verified=1
+                    user.save()
+                    return Response({"Success":True, "Message":"Mobile Authenticated"}, status=HTTP_200_OK)
+                except User.DoesNotExist:
+                    return Response({"Success":False, "Message":"Unknown User"}, status=HTTP_400_BAD_REQUEST)
 
         if email:
             email_otp_obj = EmailOtpLogs.objects.filter(email=email).order_by('-created_at').first()
@@ -93,7 +102,17 @@ class VerifyOtpView(APIView):
                 return Response({"Success":False, "Message":"Otp Expired"}, status=HTTP_401_UNAUTHORIZED)
 
             if email_otp_obj.otp == otp and time_validated_in_seconds(email_otp_obj.created_at, MAX_OTP_TIME):
-                return Response({"Success":True, "Message":"Email Authenticated"}, status=HTTP_200_OK)
+                try:
+                    if is_user:
+                        user = User.objects.get(email=email).email_verified=1
+                        user.email_verified=1
+                        user.save()
+                        return Response({"Success":True, "Message":"User Email Authenticated"}, status=HTTP_200_OK)
+                    enterprise = Enterprise.objects.get(email=email)
+                    enterprise.is_verified=1
+                    enterprise.save()
+                except User.DoesNotExist or Enterprise.DoesNotExist:
+                    return Response({"Success":True, "Message":"Email Unknown"}, status=HTTP_200_OK)
 
         return Response({"Success":False, "Message":"Otp does not exist"}, status=HTTP_401_UNAUTHORIZED)
 
@@ -101,6 +120,8 @@ class VerifyOtpView(APIView):
 class SiteConfigView(APIView):
     def get(self, request, *args, **kwargs):
         CitySerializer, PrivilegeSerializer, SectorSerializer
+        process_mobile_otp()
+        process_email_otp()
         data = {
             "city": CitySerializer(City.objects.all(), many=True).data,
             "privilege": PrivilegeSerializer(Privilege.objects.all(), many=True).data,

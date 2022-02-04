@@ -139,9 +139,32 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://localhost:3000'
 ]
-
+#CUSTON_HEADERS
 CORS_ALLOW_HEADERS = list(default_headers) + []
+
+#REDIS
+BASE_REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': BASE_REDIS_URL+'/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'PASSWORD': os.getenv('REDIS_PASSWORD'),
+            
+        }
+    }
+}
+
+#CELERY
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_AMQP_TAKS_RESULT_EXPIRES = 1000

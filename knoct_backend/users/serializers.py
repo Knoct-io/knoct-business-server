@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Sector, Privilege, City, State
+from .models import Sector, Privilege, City, State, User
 
 class StateSerializer(serializers.ModelSerializer):
 
@@ -28,3 +28,12 @@ class SectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sector
         fields = ['id', 'name', 'created_at']
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['name', 'email', 'mobile', 'city', 'created_at', 'updated_at', 'last_logged_in_time', 'date_of_birth',\
+            'privilege', 'enterprise', 'is_active', 'mobile_verified', 'email_verified', 'documents_uploaded_count', \
+            'documents_verified_count', 'public_key']

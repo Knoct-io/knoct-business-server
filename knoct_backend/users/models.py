@@ -28,19 +28,19 @@ class User(models.Model):
     name = models.CharField(max_length=50, blank=False, null=False)
     email = models.EmailField(max_length=100, blank=False, null=False, default=None, db_index=True)
     mobile = models.BigIntegerField(unique=True, blank=False, null=False, db_index=True)
-    alternate_mobile = models.BigIntegerField(unique=True, blank=False, null=False)
-    city = models.ForeignKey(to='City', related_name='user_city',
-                            blank=True, null=True, on_delete=models.CASCADE)
+    city = models.ForeignKey(to='City', related_name='user_city',blank=True, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField()
     last_logged_in_time = models.DateTimeField(default=timezone.now)
+    date_of_birth = models.DateTimeField()
     privilege = models.ForeignKey(to='Privilege', related_name='user_privilege', on_delete=models.CASCADE, default='User')
     enterprise = models.ForeignKey(to='Enterprise', related_name='user_enterprise', on_delete=models.CASCADE, default=None)
     is_active = models.BooleanField(default=True)
     mobile_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
-
+    documents_uploaded_count = models.IntegerField(default=0)
+    documents_verified_count = models.IntegerField(default=0)
+    public_key = models.CharField(max_length=100, unique=True, null=True)
     class Meta:
         db_table = 'users'
 

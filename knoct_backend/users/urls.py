@@ -9,4 +9,5 @@ urlpatterns = [
      path('verify_otp/',views.VerifyOtpView.as_view()),
      path('verify_otp/',views.VerifyOtpView.as_view()),
      path('site_configurations/',views.SiteConfigView.as_view()),
+     path('user_data/',views.UserDataView.as_view()),
 ]

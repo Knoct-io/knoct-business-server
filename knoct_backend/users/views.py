@@ -8,7 +8,7 @@ from django.core.cache import cache
 
 from .constants import MAX_OTP_TIME
 from .models import EmailOtpLogs, Enterprise, MobileOtpLogs, User, City, Privilege, Sector
-from .serializers import CitySerializer, PrivilegeSerializer, SectorSerializer
+from .serializers import CitySerializer, PrivilegeSerializer, SectorSerializer, UserSerializer
 from .user_helpers import (process_email_otp, process_mobile_otp,
                             time_validated_in_seconds)
 
@@ -129,3 +129,11 @@ class SiteConfigView(APIView):
         }
 
         return Response({"Success":True, "data":data}, status=HTTP_200_OK)
+
+class UserDataView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(model=request.data.get('model'))
+            return Response({"Success":True, "data":UserSerializer(user).data}, status=HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"Success":False, "Message":"Unknown User Mobile"}, status=HTTP_400_BAD_REQUEST)

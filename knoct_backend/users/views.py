@@ -135,7 +135,7 @@ class SiteConfigView(APIView):
 class UserDataView(APIView):
     def get(self, request, *args, **kwargs):
         try:
-            user = User.objects.get(model=request.data.get('mobile'))
+            user = User.objects.get(mobile=request.data.get('mobile'))
             return Response({"Success":True, "data":UserSerializer(user).data}, status=HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"Success":False, "Message":"Unknown User Mobile"}, status=HTTP_400_BAD_REQUEST)

@@ -86,3 +86,10 @@ class EmailOtpLogs(models.Model):
 
     class Meta:
         db_table = 'email_otps'
+
+class Nationality(models.Model):
+    name = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'nationality'

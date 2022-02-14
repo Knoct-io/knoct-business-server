@@ -7,8 +7,9 @@ from rest_framework.views import APIView
 from django.core.cache import cache
 
 from .constants import MAX_OTP_TIME
-from .models import EmailOtpLogs, Enterprise, MobileOtpLogs, User, City, Privilege, Sector
-from .serializers import CitySerializer, PrivilegeSerializer, SectorSerializer, UserSerializer
+from .models import EmailOtpLogs, Enterprise, MobileOtpLogs, User, City, Privilege, Sector, Nationality
+from .serializers import CitySerializer, PrivilegeSerializer, SectorSerializer, UserSerializer\
+    ,NationalitySerializer
 from .user_helpers import (process_email_otp, process_mobile_otp,
                             time_validated_in_seconds)
 
@@ -125,7 +126,8 @@ class SiteConfigView(APIView):
         data = {
             "city": CitySerializer(City.objects.all(), many=True).data,
             "privilege": PrivilegeSerializer(Privilege.objects.all(), many=True).data,
-            "sector": SectorSerializer(Sector.objects.all(), many=True).data
+            "sector": SectorSerializer(Sector.objects.all(), many=True).data,
+            "nationality": NationalitySerializer(Nationality.objects.all(), many=True).data
         }
 
         return Response({"Success":True, "data":data}, status=HTTP_200_OK)
@@ -133,7 +135,7 @@ class SiteConfigView(APIView):
 class UserDataView(APIView):
     def get(self, request, *args, **kwargs):
         try:
-            user = User.objects.get(model=request.data.get('model'))
+            user = User.objects.get(model=request.data.get('mobile'))
             return Response({"Success":True, "data":UserSerializer(user).data}, status=HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"Success":False, "Message":"Unknown User Mobile"}, status=HTTP_400_BAD_REQUEST)

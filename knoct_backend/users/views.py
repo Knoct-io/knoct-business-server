@@ -112,6 +112,7 @@ class VerifyOtpView(APIView):
                     enterprise = Enterprise.objects.get(email=email)
                     enterprise.is_verified=1
                     enterprise.save()
+                    return Response({"Success":True, "Message":"Email Authenticated"}, status=HTTP_200_OK)
                 except User.DoesNotExist or Enterprise.DoesNotExist:
                     return Response({"Success":True, "Message":"Email Unknown"}, status=HTTP_200_OK)
 

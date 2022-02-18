@@ -44,7 +44,7 @@ class UserSignUpView(APIView):
         if not name or not email or not mobile or not enterprise_id or not privilege_id:
             return Response({"Success":False, "Message":"Invalid name or mobile or email or enterprise_id, or privilege_id"}, status=HTTP_400_BAD_REQUEST)
 
-        if User.models.filter(email=email, mobile=mobile).exists():
+        if User.objects.filter(email=email, mobile=mobile).exists():
             return Response({"Success":True, "Message":"User Already Exists"}, status=HTTP_200_OK)
         else:
             process_mobile_otp(mobile)
